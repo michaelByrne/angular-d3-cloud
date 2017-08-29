@@ -40,6 +40,7 @@ export class AppComponent implements DoCheck {
 			maxFontSize: 56,
 			spiral: null,
 			fontWeight: null,
+			rotation: { low: -60, high: 60, num: 8 }
 
 		}
 
@@ -61,11 +62,12 @@ export class AppComponent implements DoCheck {
 	private _fontScale;          // D3 scale for font size
 	private _fillScale;          // D3 scale for text color
 	private _objDiffer;
+	private _rotations: number[];
 
 	constructor(private _element: ElementRef, private _keyValueDiffers: KeyValueDiffers) {
 		this._htmlElement = this._element.nativeElement;
 		this._host = D3.select(this._element.nativeElement);
-		console.log(this._host);
+		//console.log(this._host);
 		this._objDiffer = this._keyValueDiffers.find([]).create(null);
 		// this._setup();
 		// this._buildSVG();
@@ -79,7 +81,7 @@ export class AppComponent implements DoCheck {
 			if (!this.config) {
 				return;
 			}
-			console.log("changes");
+			//console.log("changes");
 			this._setup();
 			this._buildSVG();
 			this._populate();
@@ -93,6 +95,7 @@ export class AppComponent implements DoCheck {
 			bottom: 10,
 			left: 10
 		};
+
 		this._width = ((this._htmlElement.parentElement.clientWidth == 0)
 			? 300
 			: this._htmlElement.parentElement.clientWidth) - this._margin.left - this._margin.right;
@@ -101,10 +104,6 @@ export class AppComponent implements DoCheck {
 		}
 		this._height = this._width * 0.75 - this._margin.top - this._margin.bottom;
 
-		// this._width = 300;
-		// this._height = 300;
-		// this._minCount = 1;
-		// this._maxCount = 10;
 
 		this._minCount = D3.min(this.config.dataset, d => d.count);
 		this._maxCount = D3.max(this.config.dataset, d => d.count);
@@ -116,7 +115,10 @@ export class AppComponent implements DoCheck {
 			.domain([this._minCount, this._maxCount])
 			.range([minFontSize, maxFontSize]);
 		this._fillScale = D3.scaleOrdinal(D3.schemeCategory20);
-		console.log(this);
+		this._rotations = this._calculateRotationAngles(this.config.settings.rotation.low, this.config.settings.rotation.high, this.config.settings.rotation.num);
+		var angle = this._pickRandomFromArray(this._rotations);
+		console.log(angle);
+
 	}
 
 	private _buildSVG() {
@@ -138,7 +140,7 @@ export class AppComponent implements DoCheck {
 		d3.layout.cloud()
 			.size([this._width, this._height])
 			.words(this.config.dataset)
-			.rotate(function() { return ~~(Math.random() * 2) * 60; })
+			.rotate(() => this._rotations[Math.floor(Math.random() * this._rotations.length)])
 			.font(fontFace)
 			.fontWeight(fontWeight)
 			.fontSize(function(d) { return d.size; })
@@ -164,10 +166,32 @@ export class AppComponent implements DoCheck {
 			.attr('transform', d => 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')')
 			.attr('class', 'word-cloud')
 			.text(d => {
-				console.log(d);
+				//console.log(d);
 				return d.text;
 			});
 	}
+
+	private _calculateRotationAngles(low, high, num) {
+		var diff = (high - low) / (num - 1);
+		var rotations = [];
+
+		var counter = 0;
+		var current = low;
+		while (counter < num) {
+			rotations.push(current);
+			current += diff;
+			counter++;
+		}
+		return rotations;
+	}
+
+	private _pickRandomFromArray(array) {
+		let value = array[Math.floor(Math.random() * array.length)];
+		console.log(value);
+		return value;
+	}
+
+
 
 
 }
