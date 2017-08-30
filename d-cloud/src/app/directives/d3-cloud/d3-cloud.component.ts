@@ -1,0 +1,192 @@
+import { Component, Input, ElementRef, DoCheck, KeyValueDiffers } from '@angular/core';
+
+
+import * as D3 from 'd3';
+
+declare let d3: any;
+
+var config = {
+	dataset: [{ "text": "study", "size": 40 }, { "text": "motion", "size": 15 }],
+	settings: {
+		fontFace: null,
+		minFontSize: 18,
+		maxFontSize: 56,
+		spiral: null,
+		fontWeight: null,
+
+	}
+}
+
+
+@Component({
+	selector: 'd3-word-cloud',
+	templateUrl: './d3-cloud.component.html',
+	styleUrls: ['./d3-cloud.component.css']
+})
+export class D3CloudComponent implements DoCheck {
+
+	@Input() config: any;
+	@Input() words: any;
+
+
+
+	// words = ["Crystal Geyser", "Arrowhead", "Evian", "Coors Light", "Bud", "Ballast Point Grapefruit Sculpin", "Iced Coffee", "Tap Water", "Homeade Lemonade", "Pinot Noir", "National Bohemian", "Pikesville Rye", "La Croix", "10 Barrel Joe", "Breakside Pilser", "A Friend's Sketchy Kombucha", "Pickle Juice", "Cooking Sherry", "Olive Brine", "Sea Water", "Polar Seltzer", "Generic Club Soda", "Yeungling", "Hop Nosh IPA", "XXX", "Dog Bowl Water", "Apocalypse Bathtub Water", "Walden Pond", "Hopped Cider", "Pear Cider"]
+	// 	.map(function(d) {
+	// 		return { text: d, size: 15 + Math.random() * 90 };
+	// 	});
+	//
+	// config = {
+	// 	dataset: this.words,
+	// 	settings: {
+	// 		fontFace: null,
+	// 		minFontSize: 18,
+	// 		maxFontSize: 56,
+	// 		spiral: null,
+	// 		fontWeight: null,
+	// 		rotation: {
+	// 			low: -60,
+	// 			high: 60,
+	// 			num: 5
+	// 		}
+	// 	}
+	// }
+
+	private _host;              // D3 object referencing host DOM object
+	private _svg;               // SVG in which we will print our chart
+	private _margin: {          // Space between the svg borders and the actual chart graphic
+		top: number,
+		right: number,
+		bottom: number,
+		left: number
+	};
+	private _width: number;      // Component width
+	private _height: number;     // Component height
+	private _htmlElement: HTMLElement; // Host HTMLElement
+	private _minCount: number;   // Minimum word count
+	private _maxCount: number;   // Maximum word count
+	private _fontScale;          // D3 scale for font size
+	private _fillScale;          // D3 scale for text color
+	private _objDiffer;
+	private _rotations: number[]; // Array of possible rotations (angles)
+
+	constructor(private _element: ElementRef, private _keyValueDiffers: KeyValueDiffers) {
+		this._htmlElement = this._element.nativeElement; // Finds parent element for this directive
+		this._host = D3.select(this._element.nativeElement); // Selects parent element as host element
+		this._objDiffer = this._keyValueDiffers.find([]).create(null);
+	}
+
+	// DoCheck is a lifecycle look that's notified if a property of the input object is changed
+	ngDoCheck() {
+		let changes = this._objDiffer.diff(this.config);
+		if (changes) {
+			if (!this.config) {
+				return;
+			}
+			this._setup();
+			this._buildCloud();
+		}
+	}
+
+	// The job of _setup() is to prep the values we're going to need to build the SVG. Some are computed, some are pulled from the configuration object input
+	private _setup() {
+		this._margin = {
+			top: 10,
+			right: 10,
+			bottom: 10,
+			left: 10
+		};
+
+		this._width = ((this._htmlElement.parentElement.parentElement.clientWidth == 0)
+			? 300
+			: this._htmlElement.parentElement.parentElement.clientWidth) - this._margin.left - this._margin.right;
+		if (this._width < 100) {
+			this._width = 100;
+		}
+		this._height = this._width * 0.75 - this._margin.top - this._margin.bottom;
+
+		this._minCount = D3.min(this.words, d => d.count);
+		this._maxCount = D3.max(this.words, d => d.count);
+
+		let minFontSize: number = (this.config.minFontSize == null) ? 18 : this.config.minFontSize;
+		let maxFontSize: number = (this.config.maxFontSize == null) ? 96 : this.config.maxFontSize;
+
+		this._fontScale = D3.scaleLinear()
+			.domain([this._minCount, this._maxCount])
+			.range([minFontSize, maxFontSize]);
+		this._fillScale = D3.scaleOrdinal(D3.schemeCategory20);
+		this._rotations = this._calculateRotationAngles(this.config.rotationLow, this.config.rotationHigh, this.config.rotationNum);
+		console.log(this._rotations);
+	}
+
+
+	private _buildCloud() {
+		let fontFace: string = (this.config.fontFace == null) ? 'Roboto' : this.config.fontFace;
+		let fontWeight: string = (this.config.fontWeight == null) ? 'normal' : this.config.fontWeight;
+		let spiralType: string = (this.config.spiral == null) ? 'rectangular' : this.config.spiral;
+
+		// At this point we're basically writing normal D3 code
+		this._host.html('');
+		this._svg = this._host
+			.append('svg')
+			.attr('width', this._width + this._margin.left + this._margin.right)
+			.attr('height', this._height + this._margin.top + this._margin.bottom)
+			.append('g')
+			.attr('transform', 'translate(' + ~~(this._width / 2) + ',' + ~~(this._height / 2) + ')')
+
+		// But then we have to hand things over to the D3 cloud library for magic
+		// Note that properties here are specifified in the D3 cloud API, which is
+		// almost entirely exposed by the input configuration object
+		d3.layout.cloud()
+			.size([this._width, this._height])
+			.words(this.words)
+			.rotate(() => this._rotations[Math.floor(Math.random() * this._rotations.length)])
+			.font(fontFace)
+			.fontWeight(fontWeight)
+			.fontSize(function(d) { return d.size; })
+			.spiral("archimedean")
+			.on('end', () => {
+				console.log(d3.layout.cloud);
+				this._drawWordCloud(this.words);
+			})
+			.start();
+	}
+
+
+	private _drawWordCloud(words) {
+		console.log(words);
+		this._svg
+			.selectAll('text')
+			.data(words)
+			.enter()
+			.append('text')
+			.style('font-size', d => d.size + 'px')
+			.style('fill', (d, i) => {
+				return this._fillScale(i);
+			})
+			.attr('text-anchor', 'middle')
+			.attr('transform', d => 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')')
+			.attr('class', 'word-cloud')
+			.text(d => {
+				//console.log(d);
+				return d.text;
+			});
+	}
+
+	private _calculateRotationAngles(low, high, num) {
+		var diff = (high - low) / (num - 1);
+		var rotations = [];
+
+		var counter = 0;
+		var current = low;
+		while (counter < num) {
+			rotations.push(current);
+			current += diff;
+			counter++;
+		}
+		return rotations;
+	}
+
+
+
+
+}
