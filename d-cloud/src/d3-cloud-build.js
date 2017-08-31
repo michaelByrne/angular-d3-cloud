@@ -47,6 +47,7 @@ module.exports = function() {
           d.padding = padding.call(this, d, i);
           return d;
         }).sort(function(a, b) { return b.size - a.size; });
+    console.log(data);
 
     if (timer) clearInterval(timer);
     timer = setInterval(step, 0);

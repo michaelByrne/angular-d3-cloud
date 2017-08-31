@@ -117,10 +117,8 @@ export class D3CloudComponent implements DoCheck {
 			.domain([5, 135])
 			.range([minFontSize, maxFontSize]);
 		let test = this._fontScale(10);
-		console.log(test);
-		this._fillScale = D3.scaleOrdinal(D3.schemeCategory20);
+		this._fillScale = D3.scaleOrdinal(D3.schemeCategory10);
 		this._rotations = this._calculateRotationAngles(this.config.rotationLow, this.config.rotationHigh, this.config.rotationNum);
-		console.log(this._rotations);
 	}
 
 
@@ -145,13 +143,12 @@ export class D3CloudComponent implements DoCheck {
 			.size([this._width, this._height])
 			.words(this.words)
 			.rotate(() => this._rotations[Math.floor(Math.random() * this._rotations.length)])
-			// .font("sans-serif")
+			.font("Impact")
 			.fontWeight("normal")
-			.padding(4)
+			.padding(1)
 			.fontSize(function(d) { return d.size; })
 			.spiral("archimedean")
 			.on('end', () => {
-				console.log(d3.layout.cloud);
 				this._drawWordCloud(this.words);
 			})
 			.start();
@@ -159,7 +156,6 @@ export class D3CloudComponent implements DoCheck {
 
 
 	private _drawWordCloud(words) {
-		console.log(words);
 		this._svg
 			.selectAll('text')
 			.data(words)
@@ -171,7 +167,7 @@ export class D3CloudComponent implements DoCheck {
 				return this._fillScale(i);
 			})
 			.attr('text-anchor', 'middle')
-			.attr('transform', d => 'translate(' + [d.x + 20, d.y + 20] + ')rotate(' + d.rotate + ')')
+			.attr('transform', d => 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')')
 			.attr('class', 'word-cloud')
 			.text(d => {
 				//console.log(d);

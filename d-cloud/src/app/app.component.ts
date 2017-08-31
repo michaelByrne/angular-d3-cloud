@@ -22,11 +22,11 @@ export class AppComponent {
 	// public rotationHigh: number,
 	// public rotationNum: number,
 
-	cloudConfig = new CloudConfig(null, 18, 56, 'rectangular', null, -90, 90, 6);
+	cloudConfig = new CloudConfig(null, 18, 56, 'rectangular', null, -90, 90, 15);
 
-	words = ["Crystal Geyser", "Arrowhead", "Evian", "Coors Light", "Bud", "Ballast Point Grapefruit Sculpin", "Iced Coffee", "Tap Water", "Homeade Lemonade", "Pinot Noir", "National Bohemian", "Pikesville Rye", "La Croix", "10 Barrel Joe", "Breakside Pilser", "A Friend's Sketchy Kombucha", "Pickle Juice", "Cooking Sherry", "Olive Brine", "Sea Water", "Polar Seltzer", "Generic Club Soda", "Yeungling", "Hop Nosh IPA", "XXX", "Dog Bowl Water", "Wet", "Walden Pond", "Hopped Cider", "Pear Cider"]
+	words = ["Crystal Geyser", "Arrowhead", "Evian", "Coors Light", "Bud", "Grapefruit Sculpin", "Iced Coffee", "Tap Water", "Lemonade", "Pinot Noir", "Bohemian", "Rye", "La Croix", "10 Barrel Joe", "Breakside", "Kombucha", "Pickle Juice", "Sherry", "Olive Brine", "Sea Water", "Polar Seltzer", "Soda", "Yeungling", "IPA", "XXX", "Dog Bowl Water", "Wet", "Pond", "Hopped Cider", "Pear Cider", "Foam", "Wine", "Rum", "Whiskey", "Bourbon", "Tea", "Mysteries", "OJ", "Malk", "Goat Stuff", "Ooze", "Sea", "Sludge", "Slugs", "Brew", "Lager", "APA", "Cider"]
 		.map(function(d) {
-			return { text: d, size: 20 + Math.random() * 60 };
+			return { text: d, size: 15 + Math.random() * 70 };
 		});
 
 	// words = ["last", "week", "beyonce", "released", "first", "photographs", "her", "twins", "instagram", "poses", "floral", "backdrop", "hair", "flowing", "knee", "slightly", "bent", "Bonticelli", "Venus", "rising", "sea", "look", "grammy's", "performed", "pregnant", "channeling", "African", "Hindi", "deities", "goddesses", "season", "China", "Ivanka", "Yi Wan Ka", "power", "poise", "American Gods", "divine", "female", "beings"]
