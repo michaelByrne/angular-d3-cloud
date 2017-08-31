@@ -9,6 +9,7 @@ export class CloudConfig {
 		public rotationLow: number,
 		public rotationHigh: number,
 		public rotationNum: number,
+		public padding: number
 	) { }
 
 }

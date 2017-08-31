@@ -66,19 +66,22 @@ export class D3CloudComponent implements DoCheck {
 	private _maxCount: number;   // Maximum word count
 	private _fontScale;          // D3 scale for font size
 	private _fillScale;          // D3 scale for text color
-	private _objDiffer;
+	private _objDifferConfig;
+	private _objDifferWords;
 	private _rotations: number[]; // Array of possible rotations (angles)
 
-	constructor(private _element: ElementRef, private _keyValueDiffers: KeyValueDiffers) {
+	constructor(private _element: ElementRef, private _keyValueDiffersConfig: KeyValueDiffers, private _keyValueDiffersWords: KeyValueDiffers) {
 		this._htmlElement = this._element.nativeElement; // Finds parent element for this directive
 		this._host = D3.select(this._element.nativeElement); // Selects parent element as host element
-		this._objDiffer = this._keyValueDiffers.find([]).create(null);
+		this._objDifferConfig = this._keyValueDiffersConfig.find([]).create(null);
+		this._objDifferWords = this._keyValueDiffersWords.find([]).create(null);
 	}
 
 	// DoCheck is a lifecycle look that's notified if a property of the input object is changed
 	ngDoCheck() {
-		let changes = this._objDiffer.diff(this.config);
-		if (changes) {
+		let changesConfig = this._objDifferConfig.diff(this.config);
+		let changesWords = this._objDifferWords.diff(this.words);
+		if (changesConfig || changesWords) {
 			if (!this.config) {
 				return;
 			}
@@ -144,8 +147,8 @@ export class D3CloudComponent implements DoCheck {
 			.words(this.words)
 			.rotate(() => this._rotations[Math.floor(Math.random() * this._rotations.length)])
 			.font("Impact")
-			.fontWeight("normal")
-			.padding(1)
+			.fontWeight(fontWeight)
+			.padding(this.config.padding)
 			.fontSize(function(d) { return d.size; })
 			.spiral("archimedean")
 			.on('end', () => {
@@ -170,7 +173,6 @@ export class D3CloudComponent implements DoCheck {
 			.attr('transform', d => 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')')
 			.attr('class', 'word-cloud')
 			.text(d => {
-				//console.log(d);
 				return d.text;
 			});
 	}
