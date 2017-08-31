@@ -96,23 +96,28 @@ export class D3CloudComponent implements DoCheck {
 			left: 10
 		};
 
-		this._width = ((this._htmlElement.parentElement.parentElement.clientWidth == 0)
-			? 300
-			: this._htmlElement.parentElement.parentElement.clientWidth) - this._margin.left - this._margin.right;
-		if (this._width < 100) {
-			this._width = 100;
-		}
-		this._height = this._width * 0.75 - this._margin.top - this._margin.bottom;
+		// this._width = ((this._htmlElement.parentElement.parentElement.clientWidth == 0)
+		// 	? 300
+		// 	: this._htmlElement.parentElement.parentElement.clientWidth) - this._margin.left - this._margin.right;
+		// if (this._width < 100) {
+		// 	this._width = 100;
+		// }
+		// this._height = this._width * 0.75 - this._margin.top - this._margin.bottom;
+
+		this._width = 950;
+		this._height = 550;
 
 		this._minCount = D3.min(this.words, d => d.count);
 		this._maxCount = D3.max(this.words, d => d.count);
 
 		let minFontSize: number = (this.config.minFontSize == null) ? 18 : this.config.minFontSize;
-		let maxFontSize: number = (this.config.maxFontSize == null) ? 96 : this.config.maxFontSize;
+		let maxFontSize: number = (this.config.maxFontSize == null) ? 56 : this.config.maxFontSize;
 
 		this._fontScale = D3.scaleLinear()
-			.domain([this._minCount, this._maxCount])
+			.domain([5, 135])
 			.range([minFontSize, maxFontSize]);
+		let test = this._fontScale(10);
+		console.log(test);
 		this._fillScale = D3.scaleOrdinal(D3.schemeCategory20);
 		this._rotations = this._calculateRotationAngles(this.config.rotationLow, this.config.rotationHigh, this.config.rotationNum);
 		console.log(this._rotations);
@@ -140,8 +145,9 @@ export class D3CloudComponent implements DoCheck {
 			.size([this._width, this._height])
 			.words(this.words)
 			.rotate(() => this._rotations[Math.floor(Math.random() * this._rotations.length)])
-			.font(fontFace)
-			.fontWeight(fontWeight)
+			// .font("sans-serif")
+			.fontWeight("normal")
+			.padding(4)
 			.fontSize(function(d) { return d.size; })
 			.spiral("archimedean")
 			.on('end', () => {
@@ -160,11 +166,12 @@ export class D3CloudComponent implements DoCheck {
 			.enter()
 			.append('text')
 			.style('font-size', d => d.size + 'px')
+			.style("font-family", "Impact")
 			.style('fill', (d, i) => {
 				return this._fillScale(i);
 			})
 			.attr('text-anchor', 'middle')
-			.attr('transform', d => 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')')
+			.attr('transform', d => 'translate(' + [d.x + 20, d.y + 20] + ')rotate(' + d.rotate + ')')
 			.attr('class', 'word-cloud')
 			.text(d => {
 				//console.log(d);
