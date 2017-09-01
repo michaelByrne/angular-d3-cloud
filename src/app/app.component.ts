@@ -2,7 +2,7 @@ import { Component, Output, EventEmitter, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { D3CloudComponent } from './directives/d3-cloud/d3-cloud.component';
-import { CloudConfig } from './cloud.config';
+import { CloudConfig, WordFreq } from './cloud.config';
 
 
 @Component({
@@ -54,17 +54,39 @@ export class AppComponent implements OnInit {
 	}
 
 	processWords(wordString) {
-		var wordList = wordString.wordListString.split(' ');
-		this.wordList = wordList;
-		this.buildWordList(this.minFont, this.maxFont, this.wordList);
+		let freq = this.wordFreq(wordString.wordListString);
+		this.words = freq;
+		//console.log(freq);
+		// let wordList = wordString.wordListString.split(' ');
+		// this.wordList = wordList;
+		// this.buildWordList(this.minFont, this.maxFont, this.wordList);
 	}
 
 	buildWordList(minFont, maxFont, words) {
-		console.log(minFont);
-		console.log(maxFont);
-		console.log(words);
 		this.words = words.map((d) =>
 		{ return { text: d, size: minFont + Math.random() * maxFont } }
 		);
+		console.log(this.words);
 	}
+
+	wordFreq(string): any {
+		let yourFormat = [];
+		let words = string.replace(/[.]/g, '').split(/\s/);
+		let freqMap = new Map();
+		words.forEach(function(w) {
+			if (!freqMap[w]) {
+				freqMap[w] = 0;
+			}
+			freqMap[w] += 1;
+		});
+		console.log(freqMap);
+		for (var w in freqMap) {
+			console.log(freqMap[w]); console.log(w);
+			let newWord = { "text": w, "size": freqMap[w] * 30 }
+			yourFormat.push(newWord)
+		};
+		return yourFormat;
+	}
+
+
 }

@@ -13,3 +13,10 @@ export class CloudConfig {
 	) { }
 
 }
+
+export class WordFreq {
+	constructor(
+		public text: string,
+		public count: number
+	) { }
+}
