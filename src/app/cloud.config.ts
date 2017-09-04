@@ -14,9 +14,27 @@ export class CloudConfig {
 
 }
 
+export class Word {
+	constructor(
+		public text?: string,
+		public font?: string,
+		public hasText?: boolean,
+		public rotate?: number,
+		public size?: number,
+		public width?: number,
+		public x?: number,
+		public xoff?: number,
+		public y?: number,
+		public y0?: number,
+		public y1?: number,
+		public yoff?: number,
+		public padding?: number
+	) { }
+}
+
 export class WordFreq {
 	constructor(
 		public text: string,
-		public count: number
+		public size: number
 	) { }
 }

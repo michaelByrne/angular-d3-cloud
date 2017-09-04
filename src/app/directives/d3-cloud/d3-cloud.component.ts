@@ -1,9 +1,12 @@
 import { Component, Input, ElementRef, DoCheck, KeyValueDiffers } from '@angular/core';
 
+import { Word } from '../../cloud.config';
+import { CloudService } from '../../cloud.service';
 
 import * as D3 from 'd3';
 
 declare let d3: any;
+
 
 @Component({
 	selector: 'd3-word-cloud',
@@ -35,7 +38,7 @@ export class D3CloudComponent implements DoCheck {
 	private _objDifferWords;
 	private _rotations: number[]; // Array of possible rotations (angles)
 
-	constructor(private _element: ElementRef, private _keyValueDiffersConfig: KeyValueDiffers, private _keyValueDiffersWords: KeyValueDiffers) {
+	constructor(private _element: ElementRef, private _keyValueDiffersConfig: KeyValueDiffers, private _keyValueDiffersWords: KeyValueDiffers, private cloudService: CloudService) {
 		this._htmlElement = this._element.nativeElement; // Finds parent element for this directive
 		this._host = D3.select(this._element.nativeElement); // Selects parent element as host element
 		this._objDifferConfig = this._keyValueDiffersConfig.find([]).create(null);
@@ -75,16 +78,17 @@ export class D3CloudComponent implements DoCheck {
 		// this._width = 950;
 		// this._height = 550;
 
-		this._minCount = D3.min(this.words, d => d.count);
-		this._maxCount = D3.max(this.words, d => d.count);
+		this._minCount = D3.min(this.words, d => d.size);
+		this._maxCount = D3.max(this.words, d => d.size);
+
 
 		let minFontSize: number = (this.config.minFontSize == null) ? 18 : this.config.minFontSize;
 		let maxFontSize: number = (this.config.maxFontSize == null) ? 56 : this.config.maxFontSize;
 
-		this._fontScale = D3.scaleLinear()
-			.domain([5, 135])
+
+		this._fontScale = D3.scaleSqrt()
+			.domain([this._minCount, this._maxCount])
 			.range([minFontSize, maxFontSize]);
-		let test = this._fontScale(10);
 		this._fillScale = D3.scaleOrdinal(D3.schemeCategory10);
 		this._rotations = this._calculateRotationAngles(this.config.rotationLow, this.config.rotationHigh, this.config.rotationNum);
 	}
@@ -114,13 +118,34 @@ export class D3CloudComponent implements DoCheck {
 			.font("Impact")
 			.fontWeight(fontWeight)
 			.padding(this.config.padding)
-			.fontSize(function(d) { return d.size; })
+			.fontSize(d => this._fontScale(d.size))
 			.spiral("archimedean")
 			.on('end', () => {
 				this._drawWordCloud(this.words);
 			})
 			.start();
+		// public text: string,
+		// public font: string,
+		// public hasText: boolean,
+		// public rotate: number,
+		// public size: 15,
+		// public width: number,
+		// public x: number,
+		// public xoff: number,
+		// public y: number,
+		// public y0: number,
+		// public y1: 25,
+		// public yoff: number,
+		// let testWord = [{ "text": "barrrfffff", "font": "Impact", "hasText": true, "size": 15, width: 256, "x": -320, "x0": -128, "x1": 128, "xoff": 1728, "y": 210, "y0": -31, "y1": 25, "yoff": 1227, "rotate": 0 }];
+		this.cloudService.placeWords(this.words);
+		// let testWord = new Word("barff", "Impact", true, 0, 15, 245, -320, 1728, 210, -31, 25, 1227)
+		// this._drawWordCloud([testWord]);
+
+
 	}
+
+
+
 
 
 	private _drawWordCloud(words) {

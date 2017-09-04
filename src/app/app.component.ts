@@ -23,6 +23,7 @@ export class AppComponent implements OnInit {
 
 	wForm: FormGroup
 	wordListString: string;
+	excludeList: string[] = ["and", "the", "to", "is", "but", "for", "he", "she", "they", "their", "that", "a", "it"];
 
 	wordList = ["Crystal Geyser", "Arrowhead", "Evian", "Coors Light", "Bud", "Grapefruit Sculpin", "Iced Coffee", "Tap Water", "Lemonade", "Pinot Noir", "Bohemian", "Rye", "La Croix", "10 Barrel Joe", "Breakside", "Kombucha", "Pickle Juice", "Sherry", "Olive Brine", "Sea Water", "Polar Seltzer", "Soda", "Yeungling", "IPA", "XXX", "Dog Bowl Water", "Wet", "Pond", "Hopped Cider", "Pear Cider", "Foam", "Wine", "Rum", "Whiskey", "Bourbon", "Tea", "Mysteries", "OJ", "Malk", "Goat Stuff", "Ooze", "Sea", "Sludge", "Slugs", "Brew", "Lager", "APA", "Cider"];
 
@@ -45,12 +46,12 @@ export class AppComponent implements OnInit {
 
 	updateCloud(post) {
 		this.numAngles = post.numAngles;
-		this.minFont = post.minFont;
-		this.maxFont = post.maxFont;
+		this.cloudConfig.minFontSize = post.minFont;
+		this.cloudConfig.maxFontSize = post.maxFont;
 		this.padding = post.padding;
 		this.cloudConfig.rotationNum = this.numAngles;
 		this.cloudConfig.padding = this.padding;
-		this.buildWordList(this.minFont, this.maxFont, this.wordList);
+		this.buildWordList(this.cloudConfig.minFontSize, this.cloudConfig.maxFontSize, this.wordList);
 	}
 
 	processWords(wordString) {
@@ -66,12 +67,12 @@ export class AppComponent implements OnInit {
 		this.words = words.map((d) =>
 		{ return { text: d, size: minFont + Math.random() * maxFont } }
 		);
-		console.log(this.words);
 	}
 
 	wordFreq(string): any {
 		let yourFormat = [];
-		let words = string.replace(/[.]/g, '').split(/\s/);
+		let words = string.replace(/[^\w\s]|_/g, "")
+			.replace(/\s+/g, " ").split(/\s/);
 		let freqMap = new Map();
 		words.forEach(function(w) {
 			if (!freqMap[w]) {
@@ -81,9 +82,11 @@ export class AppComponent implements OnInit {
 		});
 		console.log(freqMap);
 		for (var w in freqMap) {
-			console.log(freqMap[w]); console.log(w);
-			let newWord = { "text": w, "size": freqMap[w] * 30 }
-			yourFormat.push(newWord)
+			if (!this.excludeList.includes(w)) {
+				console.log(freqMap[w]); console.log(w);
+				let newWord = { "text": w, "size": freqMap[w] }
+				yourFormat.push(newWord)
+			}
 		};
 		return yourFormat;
 	}

@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { D3CloudComponent } from './directives/d3-cloud/d3-cloud.component';
 import { CloudConfig } from './cloud.config';
+import { CloudService } from './cloud.service';
 
 @NgModule({
 	declarations: [
@@ -16,7 +17,7 @@ import { CloudConfig } from './cloud.config';
 		FormsModule,
 		ReactiveFormsModule
 	],
-	providers: [],
+	providers: [CloudService],
 	bootstrap: [AppComponent]
 })
 export class AppModule { }
