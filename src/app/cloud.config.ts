@@ -23,12 +23,16 @@ export class Word {
 		public size?: number,
 		public width?: number,
 		public x?: number,
+		public x0?: number,
+		public x1?: number,
 		public xoff?: number,
 		public y?: number,
 		public y0?: number,
 		public y1?: number,
 		public yoff?: number,
-		public padding?: number
+		public padding?: number,
+		public cloud?: any,
+		public canvas?: any
 	) { }
 }
 

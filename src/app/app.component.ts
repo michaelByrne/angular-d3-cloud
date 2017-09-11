@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
 
 	words: any;
 
-	wForm: FormGroup
+	wForm: FormGroup;
 	wordListString: string;
 	excludeList: string[] = ["and", "the", "to", "is", "but", "for", "he", "she", "they", "their", "that", "a", "it"];
 

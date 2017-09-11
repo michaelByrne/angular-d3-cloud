@@ -5,7 +5,7 @@ import { CloudService } from '../../cloud.service';
 
 import * as D3 from 'd3';
 
-declare let d3: any;
+
 
 
 @Component({
@@ -18,6 +18,7 @@ export class D3CloudComponent implements DoCheck {
 	@Input() config: any;
 	@Input() words: any;
 
+	testWords: any;
 
 	private _host;              // D3 object referencing host DOM object
 	private _svg;               // SVG in which we will print our chart
@@ -82,8 +83,8 @@ export class D3CloudComponent implements DoCheck {
 		this._maxCount = D3.max(this.words, d => d.size);
 
 
-		let minFontSize: number = (this.config.minFontSize == null) ? 18 : this.config.minFontSize;
-		let maxFontSize: number = (this.config.maxFontSize == null) ? 56 : this.config.maxFontSize;
+		let minFontSize: number = (this.config.minFontSize == null) ? 50 : this.config.minFontSize;
+		let maxFontSize: number = (this.config.maxFontSize == null) ? 10 : this.config.maxFontSize;
 
 
 		this._fontScale = D3.scaleSqrt()
@@ -108,38 +109,11 @@ export class D3CloudComponent implements DoCheck {
 			.append('g')
 			.attr('transform', 'translate(' + ~~(this._width / 2) + ',' + ~~(this._height / 2) + ')')
 
-		// But then we have to hand things over to the D3 cloud library for magic
-		// Note that properties here are specifified in the D3 cloud API, which is
-		// almost entirely exposed by the input configuration object
-		d3.layout.cloud()
-			.size([this._width, this._height])
-			.words(this.words)
-			.rotate(() => this._rotations[Math.floor(Math.random() * this._rotations.length)])
-			.font("Impact")
-			.fontWeight(fontWeight)
-			.padding(this.config.padding)
-			.fontSize(d => this._fontScale(d.size))
-			.spiral("archimedean")
-			.on('end', () => {
-				this._drawWordCloud(this.words);
-			})
-			.start();
-		// public text: string,
-		// public font: string,
-		// public hasText: boolean,
-		// public rotate: number,
-		// public size: 15,
-		// public width: number,
-		// public x: number,
-		// public xoff: number,
-		// public y: number,
-		// public y0: number,
-		// public y1: 25,
-		// public yoff: number,
-		// let testWord = [{ "text": "barrrfffff", "font": "Impact", "hasText": true, "size": 15, width: 256, "x": -320, "x0": -128, "x1": 128, "xoff": 1728, "y": 210, "y0": -31, "y1": 25, "yoff": 1227, "rotate": 0 }];
-		this.cloudService.placeWords(this.words);
-		// let testWord = new Word("barff", "Impact", true, 0, 15, 245, -320, 1728, 210, -31, 25, 1227)
-		// this._drawWordCloud([testWord]);
+		this.cloudService.size[0] = this._width;
+		this.cloudService.size[1] = this._height;
+		this.cloudService.start(this.words, this.config);
+		this._drawWordCloud(this.words);
+
 
 
 	}

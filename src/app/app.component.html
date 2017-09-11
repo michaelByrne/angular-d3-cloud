@@ -1,38 +1,38 @@
-<d3-word-cloud [config]="cloudConfig" [words]="words"></d3-word-cloud>
+<d3-word-cloud [words]="words" [config]="cloudConfig"></d3-word-cloud>
 <hr>
 <div>
-  <form [formGroup]="rForm" (ngSubmit)="updateCloud(rForm.value)">
-    <div class="form-container">
-      <div class="row columns">
-        <h3>Customize Cloud</h3>
-        <label style="width: 30%"># angles (1 - 10)
+	<form [formGroup]="rForm" (ngSubmit)="updateCloud(rForm.value)">
+		<div class="form-container">
+			<div class="row columns">
+				<h3>Customize Cloud</h3>
+				<label style="width: 30%"># angles (1 - 10)
           <input type="number" formControlName="numAngles">
         </label>
-        <label style="width: 30%">Minimum font
+				<label style="width: 30%">Minimum font
           <input type="number" formControlName="minFont">
         </label>
-        <label style="width: 30%">Maximum font
+				<label style="width: 30%">Maximum font
           <input type="number" formControlName="maxFont">
         </label>
-        <label style="width: 30%">Padding (0 - 9)
+				<label style="width: 30%">Padding (0 - 9)
           <input type="number" formControlName="padding">
         </label>
-        <input type="submit" style="width: 30%" class="button expanded" value="Submit Form" [disabled]="!rForm.valid">
-      </div>
-    </div>
-  </form>
+				<input type="submit" style="width: 30%" class="button expanded" value="Submit Form" [disabled]="!rForm.valid">
+			</div>
+		</div>
+	</form>
 </div>
 <hr>
 <div>
-  <form [formGroup]="wForm" (ngSubmit)="processWords(wForm.value)">
-    <div class="form-container">
-      <div class="row columns">
-        <h3>Customize word list</h3>
-        <label style="width: 60%">
+	<form [formGroup]="wForm" (ngSubmit)="processWords(wForm.value)">
+		<div class="form-container">
+			<div class="row columns">
+				<h3>Customize word list</h3>
+				<label style="width: 60%">
           <textarea formControlName="wordListString"></textarea>
         </label>
-        <input type="submit" style="width: 30%" class="button expanded" value="Submit Form" [disabled]="!wForm.valid">
-      </div>
-    </div>
-  </form>
+				<input type="submit" style="width: 30%" class="button expanded" value="Submit Form" [disabled]="!wForm.valid">
+			</div>
+		</div>
+	</form>
 </div>
